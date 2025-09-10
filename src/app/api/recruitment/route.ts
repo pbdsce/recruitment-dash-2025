@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectMongoDB from "@/lib/dbConnect";
-import RecruitmentModel from "@/models/Recruitment";
+import RecruitmentModel, { RecruitmentDoc } from "@/models/Recruitment";
+import { FilterQuery } from "mongoose";
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
     const sortOrder = searchParams.get("sortOrder") || "desc";
 
     // Build filter object
-    const filter: any = {};
+    const filter: FilterQuery<RecruitmentDoc> = {};
 
     if (search) {
       filter.$or = [
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Build sort object
-    const sort: any = {};
+    const sort: Record<string, 1 | -1> = {};
     sort[sortBy] = sortOrder === "desc" ? -1 : 1;
 
     // Calculate pagination

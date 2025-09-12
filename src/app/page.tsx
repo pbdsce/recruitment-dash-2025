@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import DataTable from "@/components/DataTable";
 import AnalyticsChart from "@/components/AnalyticsChart";
 import SearchAndFilters from "@/components/SearchAndFilters";
-import { colors } from "@/lib/colors";
 
 interface RecruitmentData {
   _id: string;
@@ -328,7 +327,6 @@ export default function Dashboard() {
                     Applications by Year of Study
                   </h3>
                   <AnalyticsChart
-                    title=""
                     data={analyticsData.applicationsByYear}
                     type="bar"
                   />
@@ -340,7 +338,6 @@ export default function Dashboard() {
                     Applications by Branch (Top 10)
                   </h3>
                   <AnalyticsChart
-                    title=""
                     data={analyticsData.applicationsByBranch}
                     type="doughnut"
                   />

@@ -8,7 +8,6 @@ interface ChartData {
 }
 
 interface AnalyticsChartProps {
-  title: string;
   data: ChartData[];
   type: "bar" | "doughnut" | "line";
 }
@@ -32,7 +31,6 @@ const getChartColor = (index: number): string => {
 };
 
 export default function AnalyticsChart({
-  title,
   data,
   type,
 }: AnalyticsChartProps) {
@@ -402,7 +400,7 @@ export default function AnalyticsChart({
               </svg>
             </div>
             <h3 className="text-lg font-semibold text-white mb-2">No Data Available</h3>
-            <p className="text-gray-400 text-sm">There's no data to display at the moment.</p>
+            <p className="text-gray-400 text-sm">There&apos;s no data to display at the moment.</p>
           </div>
         </div>
       </div>

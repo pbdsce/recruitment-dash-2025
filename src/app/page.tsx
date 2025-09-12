@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-// import StatsCard from "@/components/StatsCard";
 import DataTable from "@/components/DataTable";
 import AnalyticsChart from "@/components/AnalyticsChart";
 import SearchAndFilters from "@/components/SearchAndFilters";
@@ -109,403 +108,383 @@ export default function Dashboard() {
   };
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: colors.background.main }}>
+    <div className="min-h-screen bg-black relative">
+      {/* Global Loading Overlay */}
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-500 mx-auto mb-4"></div>
+            <p className="text-white text-lg">Loading Dashboard...</p>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="flex flex-col">
         {/* Header */}
-        <header
-          className="border-b px-6 py-4"
-          style={{
-            backgroundColor: colors.background.main,
-            borderColor: colors.border.default,
-          }}>
+        <header className="bg-black border-b border-gray-800 px-6 py-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1
-                className="text-2xl font-bold"
-                style={{ color: colors.text.accent }}>
+              <h1 className="text-4xl font-bold text-white">
                 Admin Dashboard
               </h1>
-              <p style={{ color: colors.text.muted }}>
+              <p className="text-gray-400 text-lg mt-2">
                 Recruitment Management System
               </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span className="text-gray-400 text-sm">Live</span>
             </div>
           </div>
         </header>
 
-        <main
-          className="flex-1 p-6"
-          style={{ backgroundColor: colors.background.main }}>
-          {/* Top Row - Large Cards */}
-          {analyticsData && (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-              <div className="bg-blue-900 rounded-lg p-6 relative overflow-hidden">
-                <div className="flex items-center justify-between">
+        <main className="flex-1 p-6 bg-black">
+          {/* Show content only when not loading and data is available */}
+          {!loading && analyticsData && (
+            <>
+              {/* Top Row - Stats Cards */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              
+              {/* Total Applications Card */}
+              <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 hover:border-green-500 transition-colors">
+                <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-white text-lg font-semibold mb-2">
                       Total Applications
                     </h3>
-                    <p className="text-blue-200 text-sm mb-4">
+                    <p className="text-gray-400 text-sm">
                       {analyticsData.trends?.monthlyChange >= 0 ? "+" : ""}
                       {analyticsData.trends?.monthlyChange || 0}% vs last month
                     </p>
-                    <div className="text-4xl font-bold text-blue-300">
-                      {analyticsData.totalApplications}
-                    </div>
                   </div>
-                  <div className="text-6xl text-blue-400/20">
-                    <svg
-                      className="w-16 h-16"
-                      fill="currentColor"
-                      viewBox="0 0 20 20">
+                  <div className="text-4xl text-green-500">
+                    <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                     </svg>
                   </div>
                 </div>
+                <div className="text-4xl font-bold text-white mb-4">
+                  {analyticsData.totalApplications}
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="bg-green-500 h-2 rounded-full" style={{ width: "100%" }}></div>
+                </div>
               </div>
 
-              <div className="bg-lime-900 rounded-lg p-6 relative overflow-hidden">
-                <div className="flex items-center justify-between">
+              {/* This Week Card */}
+              <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 hover:border-green-500 transition-colors">
+                <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-white text-lg font-semibold mb-2">
                       This Week
                     </h3>
-                    <p className="text-lime-200 text-sm mb-4">
+                    <p className="text-gray-400 text-sm">
                       {analyticsData.trends?.weeklyChange >= 0 ? "+" : ""}
                       {analyticsData.trends?.weeklyChange || 0}% vs last week
                     </p>
-                    <div className="text-4xl font-bold text-lime-300">
-                      {analyticsData.trends?.thisWeekCount || 0}
-                    </div>
                   </div>
-                  <div className="text-6xl text-lime-400/20">
-                    <svg
-                      className="w-16 h-16"
-                      fill="currentColor"
-                      viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
-                        clipRule="evenodd"
-                      />
+                  <div className="text-4xl text-green-500">
+                    <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
                     </svg>
                   </div>
                 </div>
+                <div className="text-4xl font-bold text-white mb-4">
+                  {analyticsData.trends?.thisWeekCount || 0}
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="bg-green-500 h-2 rounded-full" style={{ width: `${Math.min((analyticsData.trends?.thisWeekCount || 0) / 10 * 100, 100)}%` }}></div>
+                </div>
               </div>
 
-              <div className="bg-purple-900 rounded-lg p-6 relative overflow-hidden">
-                <div className="flex items-center justify-between">
+              {/* Top Branch Card */}
+              <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 hover:border-green-500 transition-colors">
+                <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-white text-lg font-semibold mb-2">
                       Top Branch
                     </h3>
-                    <p className="text-purple-200 text-sm mb-4">
+                    <p className="text-gray-400 text-sm">
                       {analyticsData.trends?.topBranchChange >= 0 ? "+" : ""}
                       {analyticsData.trends?.topBranchChange || 0}% vs last week
                     </p>
-                    <div className="text-4xl font-bold text-purple-300">
-                      {analyticsData.applicationsByBranch[0]?.count || 0}
-                    </div>
-                    <div className="text-sm text-purple-200 mt-2">
-                      {analyticsData.trends?.topBranchName || "N/A"}
-                    </div>
                   </div>
-                  <div className="text-6xl text-purple-400/20">
-                    <svg
-                      className="w-16 h-16"
-                      fill="currentColor"
-                      viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                        clipRule="evenodd"
-                      />
+                  <div className="text-4xl text-green-500">
+                    <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                     </svg>
                   </div>
                 </div>
+                <div className="text-4xl font-bold text-white mb-2">
+                  {analyticsData.applicationsByBranch[0]?.count || 0}
+                </div>
+                <div className="text-sm text-gray-400 mb-4">
+                  {analyticsData.trends?.topBranchName || "N/A"}
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="bg-green-500 h-2 rounded-full" style={{ width: `${Math.min((analyticsData.applicationsByBranch[0]?.count || 0) / 20 * 100, 100)}%` }}></div>
+                </div>
               </div>
-            </div>
+              </div>
+
+              {/* Middle Row - Compact Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                
+                <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 hover:border-green-500 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-white text-sm font-medium mb-1">
+                        This Month
+                      </h3>
+                      <div className="text-2xl font-bold text-green-500">
+                        {analyticsData.trends?.thisMonthCount || 0}
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">
+                        {analyticsData.trends?.monthlyChange >= 0 ? "+" : ""}
+                        {analyticsData.trends?.monthlyChange || 0}% vs last month
+                      </div>
+                    </div>
+                    <div className="text-3xl text-green-500">
+                      <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 hover:border-green-500 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-white text-sm font-medium mb-1">
+                        This Week
+                      </h3>
+                      <div className="text-2xl font-bold text-green-500">
+                        {analyticsData.trends?.thisWeekCount || 0}
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">
+                        {analyticsData.trends?.weeklyChange >= 0 ? "+" : ""}
+                        {analyticsData.trends?.weeklyChange || 0}% vs last week
+                      </div>
+                    </div>
+                    <div className="text-3xl text-green-500">
+                      <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 hover:border-green-500 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-white text-sm font-medium mb-1">
+                        Recent Apps
+                      </h3>
+                      <div className="text-2xl font-bold text-green-500">
+                        {analyticsData.recentApplications.length}
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">
+                        Last 5 applications
+                      </div>
+                    </div>
+                    <div className="text-3xl text-green-500">
+                      <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 hover:border-green-500 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-white text-sm font-medium mb-1">
+                        Top Branch
+                      </h3>
+                      <div className="text-2xl font-bold text-green-500">
+                        {analyticsData.applicationsByBranch[0]?.count || 0}
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">
+                        {analyticsData.trends?.topBranchChange >= 0 ? "+" : ""}
+                        {analyticsData.trends?.topBranchChange || 0}% vs last week
+                      </div>
+                    </div>
+                    <div className="text-3xl text-green-500">
+                      <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Charts Section */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                
+                <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                    <div className="w-1 h-6 bg-green-500 rounded-full mr-3"></div>
+                    Applications by Year of Study
+                  </h3>
+                  <AnalyticsChart
+                    title=""
+                    data={analyticsData.applicationsByYear}
+                    type="bar"
+                  />
+                </div>
+
+                <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                    <div className="w-1 h-6 bg-green-500 rounded-full mr-3"></div>
+                    Applications by Branch (Top 10)
+                  </h3>
+                  <AnalyticsChart
+                    title=""
+                    data={analyticsData.applicationsByBranch}
+                    type="doughnut"
+                  />
+                </div>
+              </div>
+
+              {/* Quick Overview Section */}
+              <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 mb-8">
+                <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+                  <div className="w-1 h-6 bg-green-500 rounded-full mr-3"></div>
+                  Quick Overview
+                </h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                      Application Status
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center p-3 bg-gray-800 rounded-lg border border-gray-600">
+                        <span className="text-gray-300">Total Applications:</span>
+                        <span className="text-xl font-bold text-green-500">
+                          {analyticsData?.totalApplications || 0}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gray-800 rounded-lg border border-gray-600">
+                        <span className="text-gray-300">This Month:</span>
+                        <div className="text-right">
+                          <span className="text-lg font-bold text-white">
+                            {analyticsData?.trends?.thisMonthCount || 0}
+                          </span>
+                          <span className="text-sm text-green-400 ml-2">
+                            {(analyticsData?.trends?.monthlyChange ?? 0) >= 0 ? "+" : ""}
+                            {analyticsData?.trends?.monthlyChange ?? 0}%
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gray-800 rounded-lg border border-gray-600">
+                        <span className="text-gray-300">This Week:</span>
+                        <div className="text-right">
+                          <span className="text-lg font-bold text-green-500">
+                            {analyticsData?.trends?.thisWeekCount || 0}
+                          </span>
+                          <span className="text-sm text-green-400 ml-2">
+                            {(analyticsData?.trends?.weeklyChange ?? 0) >= 0 ? "+" : ""}
+                            {analyticsData?.trends?.weeklyChange ?? 0}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                      Branch Distribution
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center p-3 bg-gray-800 rounded-lg border border-gray-600">
+                        <span className="text-gray-300">Top Branch:</span>
+                        <div className="text-right">
+                          <span className="text-lg font-bold text-green-500">
+                            {analyticsData?.applicationsByBranch[0]?.count || 0}
+                          </span>
+                          <span className="text-sm text-green-400 ml-2">
+                            {(analyticsData?.trends?.topBranchChange ?? 0) >= 0 ? "+" : ""}
+                            {analyticsData?.trends?.topBranchChange ?? 0}%
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gray-800 rounded-lg border border-gray-600">
+                        <span className="text-gray-300">Branch Name:</span>
+                        <span className="text-green-500 font-semibold text-sm">
+                          {analyticsData?.trends?.topBranchName || "N/A"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gray-800 rounded-lg border border-gray-600">
+                        <span className="text-gray-300">Active Branches:</span>
+                        <span className="text-lg font-bold text-green-500">
+                          {analyticsData?.applicationsByBranch.filter(
+                            (b) => b.count > 0
+                          ).length || 0}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                      Year Distribution
+                    </h3>
+                    <div className="space-y-2">
+                      {analyticsData?.applicationsByYear.map((year) => (
+                        <div key={year._id} className="flex justify-between items-center p-2 bg-gray-800 rounded border border-gray-600">
+                          <span className="text-gray-300">{year._id}:</span>
+                          <span className="text-green-500 font-bold">
+                            {year.count}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Search and Filters */}
+              <div className="mb-8">
+                <SearchAndFilters
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                  onRefresh={fetchData}
+                />
+              </div>
+
+              {/* Data Table */}
+              <div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-xl font-bold text-white flex items-center">
+                        <div className="w-1 h-6 bg-green-500 rounded-full mr-3"></div>
+                        Recruitment Applications
+                      </h2>
+                      <p className="text-gray-400 mt-1">
+                        {pagination.total} total applications
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-green-500 text-sm font-medium">Live Data</span>
+                    </div>
+                  </div>
+                </div>
+                <DataTable
+                  data={recruitmentData}
+                  loading={false}
+                  pagination={pagination}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            </>
           )}
-
-          {/* Middle Row - Smaller Cards */}
-          {analyticsData && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-blue-800 rounded-lg p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-white text-lg font-semibold">
-                      This Month
-                    </h3>
-                    <div className="text-3xl font-bold text-blue-300 mt-2">
-                      {analyticsData.trends?.thisMonthCount || 0}
-                    </div>
-                    <div className="text-sm text-blue-200 mt-1">
-                      {analyticsData.trends?.monthlyChange >= 0 ? "+" : ""}
-                      {analyticsData.trends?.monthlyChange || 0}% vs last month
-                    </div>
-                  </div>
-                  <div className="text-4xl text-blue-400">
-                    <svg
-                      className="w-10 h-10"
-                      fill="currentColor"
-                      viewBox="0 0 20 20">
-                      <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-lime-800 rounded-lg p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-white text-lg font-semibold">
-                      This Week
-                    </h3>
-                    <div className="text-3xl font-bold text-lime-300 mt-2">
-                      {analyticsData.trends?.thisWeekCount || 0}
-                    </div>
-                    <div className="text-sm text-lime-200 mt-1">
-                      {analyticsData.trends?.weeklyChange >= 0 ? "+" : ""}
-                      {analyticsData.trends?.weeklyChange || 0}% vs last week
-                    </div>
-                  </div>
-                  <div className="text-4xl text-lime-400">
-                    <svg
-                      className="w-10 h-10"
-                      fill="currentColor"
-                      viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-yellow-800 rounded-lg p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-white text-lg font-semibold">
-                      Recent Apps
-                    </h3>
-                    <div className="text-3xl font-bold text-yellow-300 mt-2">
-                      {analyticsData.recentApplications.length}
-                    </div>
-                    <div className="text-sm text-yellow-200 mt-1">
-                      Last 5 applications
-                    </div>
-                  </div>
-                  <div className="text-4xl text-yellow-400">
-                    <svg
-                      className="w-10 h-10"
-                      fill="currentColor"
-                      viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-purple-800 rounded-lg p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-white text-lg font-semibold">
-                      Top Branch
-                    </h3>
-                    <div className="text-3xl font-bold text-purple-300 mt-2">
-                      {analyticsData.applicationsByBranch[0]?.count || 0}
-                    </div>
-                    <div className="text-sm text-purple-200 mt-1">
-                      {analyticsData.trends?.topBranchChange >= 0 ? "+" : ""}
-                      {analyticsData.trends?.topBranchChange || 0}% vs last week
-                    </div>
-                  </div>
-                  <div className="text-4xl text-purple-400">
-                    <svg
-                      className="w-10 h-10"
-                      fill="currentColor"
-                      viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Charts */}
-          {analyticsData && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              <AnalyticsChart
-                title="Applications by Year of Study"
-                data={analyticsData.applicationsByYear}
-                type="bar"
-              />
-              <AnalyticsChart
-                title="Applications by Branch (Top 10)"
-                data={analyticsData.applicationsByBranch}
-                type="doughnut"
-              />
-            </div>
-          )}
-
-          {/* Quick Overview Section */}
-          <div
-            className="border rounded-lg p-6 mb-8"
-            style={{
-              backgroundColor: colors.background.card,
-              borderColor: colors.border.default,
-            }}>
-            <h2
-              className="text-xl font-bold mb-6"
-              style={{ color: colors.text.accent }}>
-              Quick Overview
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div>
-                <h3
-                  className="font-semibold mb-4"
-                  style={{ color: colors.text.primary }}>
-                  Application Status
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span style={{ color: colors.text.secondary }}>
-                      Total Applications:
-                    </span>
-                    <span
-                      className="font-bold"
-                      style={{ color: colors.cards.blue.accent }}>
-                      {analyticsData?.totalApplications || 0}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span style={{ color: colors.text.secondary }}>
-                      This Month:
-                    </span>
-                    <span
-                      className="font-bold"
-                      style={{ color: colors.text.accent }}>
-                      {analyticsData?.trends?.thisMonthCount || 0}
-                      <span className="text-xs ml-2">
-                        (
-                        {analyticsData?.trends?.monthlyChange &&
-                        analyticsData?.trends?.monthlyChange >= 0
-                          ? "+"
-                          : ""}
-                        {analyticsData?.trends?.monthlyChange || 0}%)
-                      </span>
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">This Week:</span>
-                    <span className="text-lime-400 font-bold">
-                      {analyticsData?.trends?.thisWeekCount || 0}
-                      <span className="text-xs ml-2">
-                        (
-                        {analyticsData?.trends?.weeklyChange &&
-                        analyticsData?.trends?.weeklyChange >= 0
-                          ? "+"
-                          : ""}
-                        {analyticsData?.trends?.weeklyChange || 0}%)
-                      </span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-white font-semibold mb-4">
-                  Branch Distribution
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Top Branch:</span>
-                    <span className="text-yellow-400 font-bold">
-                      {analyticsData?.applicationsByBranch[0]?.count || 0}
-                      <span className="text-xs ml-2">
-                        (
-                        {analyticsData?.trends?.topBranchChange &&
-                        analyticsData?.trends?.topBranchChange >= 0
-                          ? "+"
-                          : ""}
-                        {analyticsData?.trends?.topBranchChange || 0}%)
-                      </span>
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Branch Name:</span>
-                    <span className="text-yellow-400 font-bold text-xs">
-                      {analyticsData?.trends?.topBranchName || "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Active Branches:</span>
-                    <span className="text-yellow-400 font-bold">
-                      {analyticsData?.applicationsByBranch.filter(
-                        (b) => b.count > 0
-                      ).length || 0}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="text-white font-semibold mb-4">
-                  Year Distribution
-                </h3>
-                <div className="space-y-3">
-                  {analyticsData?.applicationsByYear.map((year) => (
-                    <div key={year._id} className="flex justify-between">
-                      <span className="text-gray-300">{year._id}:</span>
-                      <span className="text-purple-400 font-bold">
-                        {year.count}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Search and Filters */}
-          <div className="mb-8">
-            <SearchAndFilters
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              onRefresh={fetchData}
-            />
-          </div>
-
-          {/* Data Table */}
-          <div className="bg-black border border-gray-600 shadow-lg rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-600">
-              <h2 className="text-lg font-semibold text-white">
-                Recruitment Applications
-              </h2>
-              <p className="text-sm text-gray-400">
-                {pagination.total} total applications
-              </p>
-            </div>
-            <DataTable
-              data={recruitmentData}
-              loading={loading}
-              pagination={pagination}
-              onPageChange={handlePageChange}
-            />
-          </div>
         </main>
       </div>
     </div>

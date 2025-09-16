@@ -37,33 +37,61 @@ export default function AnalyticsChart({
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (!canvasRef.current || !data.length) return;
+    if (!canvasRef.current) return;
 
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const draw = () => {
+      if (!canvasRef.current) return;
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
-    // Set canvas size for high DPI displays
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = canvas.offsetWidth * dpr;
-    canvas.height = canvas.offsetHeight * dpr;
-    ctx.scale(dpr, dpr);
+      // Set canvas size for high DPI displays
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = canvas.offsetWidth * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
 
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const width = canvas.offsetWidth;
-    const height = canvas.offsetHeight;
-    const padding = 60;
+      const width = canvas.offsetWidth;
+      const height = canvas.offsetHeight;
+      const padding = 60;
 
-    if (type === "bar") {
-      drawModernBarChart(ctx, data, width, height, padding);
-    } else if (type === "doughnut") {
-      drawModernDoughnutChart(ctx, data, width, height);
-    } else if (type === "line") {
-      drawModernLineChart(ctx, data, width, height, padding);
-    }
+      if (!data.length) {
+        drawNoDataOverlay(ctx, width, height);
+        return;
+      }
+
+      if (type === "bar") {
+        drawModernBarChart(ctx, data, width, height, padding);
+      } else if (type === "doughnut") {
+        drawModernDoughnutChart(ctx, data, width, height);
+      } else if (type === "line") {
+        drawModernLineChart(ctx, data, width, height, padding);
+      }
+    };
+
+    draw();
+
+    const handleResize = () => draw();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [data, type]);
+
+  const drawNoDataOverlay = (
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number
+  ) => {
+    ctx.fillStyle = "#111827";
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = "#9CA3AF";
+    ctx.font = "bold 16px Inter, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("No data to display", width / 2, height / 2);
+  };
 
   const drawModernBarChart = (
     ctx: CanvasRenderingContext2D,
@@ -73,6 +101,10 @@ export default function AnalyticsChart({
     padding: number
   ) => {
     const maxValue = Math.max(...data.map((d) => d.count));
+    if (!isFinite(maxValue) || maxValue <= 0) {
+      drawNoDataOverlay(ctx, width, height);
+      return;
+    }
     const barWidth = (width - padding * 2) / data.length;
     const chartHeight = height - padding * 2;
     const barSpacing = barWidth * 0.2;
@@ -157,12 +189,36 @@ export default function AnalyticsChart({
     width: number,
     height: number
   ) => {
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const radius = Math.min(width, height) / 2 - 60;
+    // Legend layout calculation (tighter to free plot space)
+    const legendItemHeight = 22;
+    const legendPadding = 12;
+    const legendBoxSize = 14;
+    const legendGap = 8;
+    const legendWidth = 140; // reserved width when legend is on the right
+    const legendHeight = data.length * legendItemHeight + legendPadding;
+
+    const placeLegendRight = width >= 640; // use right-side legend on wider canvases
+
+    // Compute plot area excluding legend
+    const plotPadding = 20;
+    const availableWidth = placeLegendRight ? width - legendWidth - plotPadding : width - plotPadding * 2;
+    const availableHeight = placeLegendRight ? height - plotPadding * 2 : height - legendHeight - plotPadding * 2;
+
+    const centerX = placeLegendRight
+      ? plotPadding + availableWidth / 2
+      : width / 2;
+    const centerY = placeLegendRight
+      ? height / 2
+      : plotPadding + availableHeight / 2;
+
+    const radius = Math.max(40, Math.min(availableWidth, availableHeight) / 2 - 6);
     const innerRadius = radius * 0.5;
 
     const total = data.reduce((sum, item) => sum + item.count, 0);
+    if (!isFinite(total) || total <= 0) {
+      drawNoDataOverlay(ctx, width, height);
+      return;
+    }
     let currentAngle = -Math.PI / 2;
 
     // Draw outer glow effect
@@ -231,36 +287,36 @@ export default function AnalyticsChart({
     ctx.fillStyle = "#9CA3AF";
     ctx.fillText("Total", centerX, centerY + 15);
 
-    // Draw modern legend
-    const legendStartX = 20;
-    const legendStartY = 40;
-    const legendItemHeight = 25;
+    // Draw modern legend (right or bottom, avoiding overlap)
+    const legendStartX = placeLegendRight ? width - legendWidth + legendPadding : plotPadding;
+    const legendStartY = placeLegendRight ? plotPadding : height - legendHeight + legendPadding / 2;
 
     data.forEach((item, index) => {
       const legendY = legendStartY + index * legendItemHeight;
-      
+
       // Draw legend color box
       ctx.fillStyle = getChartColor(index);
-      ctx.fillRect(legendStartX, legendY - 8, 16, 16);
-      
+      ctx.fillRect(legendStartX, legendY - legendBoxSize / 2, legendBoxSize, legendBoxSize);
+
       // Draw legend border
       ctx.strokeStyle = "#ffffff";
       ctx.lineWidth = 1;
-      ctx.strokeRect(legendStartX, legendY - 8, 16, 16);
+      ctx.strokeRect(legendStartX, legendY - legendBoxSize / 2, legendBoxSize, legendBoxSize);
 
       // Draw legend text
       ctx.fillStyle = "#ffffff";
       ctx.font = "14px Inter, sans-serif";
       ctx.textAlign = "left";
-      const displayText = item._id.length > 15 ? item._id.substring(0, 15) + "..." : item._id;
-      ctx.fillText(displayText, legendStartX + 25, legendY + 2);
+      const displayText = item._id.length > 18 ? item._id.substring(0, 18) + "..." : item._id;
+      ctx.fillText(displayText, legendStartX + legendBoxSize + legendGap, legendY + 4);
 
       // Draw percentage
       const percentage = ((item.count / total) * 100).toFixed(1);
       ctx.fillStyle = "#9CA3AF";
       ctx.font = "12px Inter, sans-serif";
-      ctx.textAlign = "right";
-      ctx.fillText(`${percentage}%`, width - 20, legendY + 2);
+      ctx.textAlign = placeLegendRight ? "right" : "left";
+      const percentX = placeLegendRight ? width - legendPadding : legendStartX + legendBoxSize + legendGap + 140;
+      ctx.fillText(`${percentage}%`, percentX, legendY + 4);
     });
   };
 
@@ -272,6 +328,10 @@ export default function AnalyticsChart({
     padding: number
   ) => {
     const maxValue = Math.max(...data.map((d) => d.count));
+    if (!isFinite(maxValue) || maxValue <= 0) {
+      drawNoDataOverlay(ctx, width, height);
+      return;
+    }
     const chartWidth = width - padding * 2;
     const chartHeight = height - padding * 2;
     const stepX = chartWidth / (data.length - 1);
@@ -411,8 +471,8 @@ export default function AnalyticsChart({
     <div className="relative">
       <canvas
         ref={canvasRef}
-        className="w-full h-80 rounded-lg"
-        style={{ maxHeight: "320px" }}
+        className="w-full rounded-lg"
+        style={{ height: "min(56vh, 480px)" }}
       />
     </div>
   );

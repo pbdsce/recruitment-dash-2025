@@ -1,6 +1,7 @@
 "use client";
 
 import { colors, getYearBadgeClasses } from "@/lib/colors";
+import { useState } from "react";
 
 interface RecruitmentData {
   _id: string;
@@ -35,6 +36,8 @@ export default function DataTable({
   pagination,
   onPageChange,
 }: DataTableProps) {
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -112,9 +115,85 @@ export default function DataTable({
   }
 
   return (
-    <div className="overflow-hidden">
-      <div className="block">
-        <table className="w-full divide-y divide-gray-600">
+    <div className="">
+      {/* Mobile list (<= sm) */}
+      <div className="sm:hidden space-y-3 p-3">
+        {data.map((item) => {
+          const itemId = item._id.toString();
+          return (
+            <div key={itemId} className="rounded-lg border border-gray-700 bg-black">
+              <button
+                type="button"
+                onClick={() => setExpanded((prev) => ({ ...prev, [itemId]: !prev[itemId] }))}
+                className="w-full p-4 flex items-center text-left"
+                aria-expanded={!!expanded[itemId]}
+              >
+                <div className="flex-shrink-0 h-10 w-10">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-lime-500 to-lime-600 flex items-center justify-center shadow-md">
+                    <span className="text-sm font-semibold text-white">
+                      {item.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+                <div className="ml-3 min-w-0 flex-1">
+                  <div className="text-sm font-semibold text-white truncate">{item.name}</div>
+                  <div className="text-[11px] text-gray-400 truncate">{truncateText(item.about, 70)}</div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span
+                    className={`inline-flex px-2 py-1 text-[10px] font-semibold rounded-full ${getYearBadgeColor(
+                      item.year_of_study
+                    )}`}
+                  >
+                    {item.year_of_study}
+                  </span>
+                  <span className={`text-xs font-medium ${expanded[itemId] ? "text-lime-400" : "text-gray-400"}`}>
+                    {expanded[itemId] ? "Hide" : "Details"}
+                  </span>
+                  <svg
+                    className={`h-4 w-4 transition-transform ${expanded[itemId] ? "rotate-180 text-lime-400" : "rotate-0 text-gray-400"}`}
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.939l3.71-3.71a.75.75 0 111.06 1.061l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </button>
+              {expanded[itemId] && (
+                <div className="px-4 pb-4 pt-0 text-xs space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="rounded-md bg-gray-900 border border-gray-800 px-3 py-2">
+                      <div className="text-gray-400">Branch</div>
+                      <div className="text-white font-medium">{item.branch}</div>
+                    </div>
+                    <div className="rounded-md bg-gray-900 border border-gray-800 px-3 py-2">
+                      <div className="text-gray-400">Applied</div>
+                      <div className="text-white">{formatDate(item.createdAt)}</div>
+                    </div>
+                    <div className="col-span-2 rounded-md bg-gray-900 border border-gray-800 px-3 py-2">
+                      <div className="text-gray-400">Email</div>
+                      <div className="text-white truncate">{item.email}</div>
+                    </div>
+                    <div className="col-span-2 rounded-md bg-gray-900 border border-gray-800 px-3 py-2">
+                      <div className="text-gray-400">WhatsApp</div>
+                      <div className="text-white">{item.whatsapp_number}</div>
+                    </div>
+                    <div className="col-span-2 rounded-md bg-gray-900 border border-gray-800 px-3 py-2">
+                      <div className="text-gray-400">College ID</div>
+                      <div className="text-white truncate font-mono">{item.college_id}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop/tablet table (>= sm) */}
+      <div className="hidden sm:block overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-600">
           <thead className="bg-black">
             <tr>
               <th className="px-3 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">

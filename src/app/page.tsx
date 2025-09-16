@@ -121,13 +121,13 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="flex flex-col">
         {/* Header */}
-        <header className="bg-black border-b border-gray-800 px-6 py-6">
+        <header className="bg-black border-b border-gray-800 px-4 py-4 sm:px-6 sm:py-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-4xl font-bold text-white">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
                 Admin Dashboard
               </h1>
-              <p className="text-gray-400 text-lg mt-2">
+              <p className="text-gray-400 text-sm sm:text-base lg:text-lg mt-2">
                 Recruitment Management System
               </p>
             </div>
@@ -138,12 +138,12 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <main className="flex-1 p-6 bg-black">
+        <main className="flex-1 p-4 sm:p-6 bg-black">
           {/* Show content only when not loading and data is available */}
           {!loading && analyticsData && (
             <>
               {/* Top Row - Stats Cards */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
               
               {/* Total Applications Card */}
               <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 hover:border-green-500 transition-colors">
@@ -228,7 +228,7 @@ export default function Dashboard() {
               </div>
 
               {/* Middle Row - Compact Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
                 
                 <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 hover:border-green-500 transition-colors">
                   <div className="flex items-center justify-between">
@@ -319,9 +319,9 @@ export default function Dashboard() {
               </div>
 
               {/* Charts Section */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-8">
                 
-                <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
+                <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 sm:p-6">
                   <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                     <div className="w-1 h-6 bg-green-500 rounded-full mr-3"></div>
                     Applications by Year of Study
@@ -332,7 +332,7 @@ export default function Dashboard() {
                   />
                 </div>
 
-                <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
+                <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 sm:p-6">
                   <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                     <div className="w-1 h-6 bg-green-500 rounded-full mr-3"></div>
                     Applications by Branch (Top 10)
@@ -345,13 +345,13 @@ export default function Dashboard() {
               </div>
 
               {/* Quick Overview Section */}
-              <div className="bg-gray-900 border border-gray-700 rounded-lg p-6 mb-8">
+              <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 sm:p-6 mb-8">
                 <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                   <div className="w-1 h-6 bg-green-500 rounded-full mr-3"></div>
                   Quick Overview
                 </h2>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                       <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
@@ -455,11 +455,11 @@ export default function Dashboard() {
               </div>
 
               {/* Data Table */}
-              <div className="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-700">
+              <div className="bg-gray-900 border border-gray-700 rounded-lg">
+                <div className="px-4 sm:px-6 py-4 border-b border-gray-700">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-xl font-bold text-white flex items-center">
+                      <h2 className="text-lg sm:text-xl font-bold text-white flex items-center">
                         <div className="w-1 h-6 bg-green-500 rounded-full mr-3"></div>
                         Recruitment Applications
                       </h2>
@@ -473,12 +473,16 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-                <DataTable
-                  data={recruitmentData}
-                  loading={false}
-                  pagination={pagination}
-                  onPageChange={handlePageChange}
-                />
+                <div className="w-full overflow-x-auto">
+                  <div className="min-w-[700px] sm:min-w-0">
+                    <DataTable
+                      data={recruitmentData}
+                      loading={false}
+                      pagination={pagination}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                </div>
               </div>
             </>
           )}

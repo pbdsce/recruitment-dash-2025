@@ -183,6 +183,10 @@ export default function DataTable({
                       <div className="text-gray-400">College ID</div>
                       <div className="text-white truncate font-mono">{item.college_id}</div>
                     </div>
+                    <div className="col-span-2 rounded-md bg-gray-900 border border-gray-800 px-3 py-2">
+                      <div className="text-gray-400">About</div>
+                      <div className="text-white">{item.about}</div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -219,7 +223,7 @@ export default function DataTable({
           <tbody className="bg-black divide-y divide-gray-600">
             {data.map((item) => {
               const itemId = item._id.toString();
-              return (
+     return [
                 <tr key={itemId} className="hover:bg-gray-800">
                   <td className="px-3 py-4">
                     <div className="flex items-center">
@@ -237,6 +241,14 @@ export default function DataTable({
                         <div className="text-xs text-gray-400 truncate">
                           {truncateText(item.about, 40)}
                         </div>
+                        {item.about.length > 40 && (
+                            <button
+                              onClick={() => setExpanded((prev) => ({ ...prev, [itemId]: !prev[itemId] }))}
+                              className="text-xs text-lime-400 hover:text-lime-300 mt-1 inline-flex items-center"
+                            >
+                              {expanded[itemId] ? "Read less" : "Read more"}
+                            </button>
+                          )}
                       </div>
                     </div>
                   </td>
@@ -263,14 +275,24 @@ export default function DataTable({
                     <div className="text-xs text-white font-mono truncate">
                       {item.college_id}
                     </div>
-                  </td>
+                    </td>
                   <td className="px-3 py-4 hidden sm:table-cell">
                     <div className="text-xs text-gray-400">
                       {formatDate(item.createdAt)}
                     </div>
                   </td>
-                </tr>
-              );
+                </tr>,
+                expanded[itemId] && (
+                  <tr key={`${itemId}-expanded`} className="bg-gray-900">
+                    <td colSpan={6} className="px-3 py-4">
+                      <div className="text-xs">
+                        <div className="font-medium text-gray-400 mb-1">Full Bio:</div>
+                        <div className="text-white">{item.about}</div>
+                      </div>
+                    </td>
+                  </tr>
+                ),
+              ].filter(Boolean); 
             })}
           </tbody>
         </table>
